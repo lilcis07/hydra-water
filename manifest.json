@@ -1,0 +1,13 @@
+{
+  "name":"Hydra — Controle de Água",
+  "short_name":"Hydra",
+  "description":"Dashboard pessoal para acompanhar o consumo diário de água.",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "orientation":"portrait",
+  "background_color":"#f4f8f7",
+  "theme_color":"#0f766e",
+  "lang":"pt-BR",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}

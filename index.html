@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="description" content="Dashboard pessoal para acompanhar o consumo diário de água.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>Hydra — Controle de Água</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">HYDRA</span>
+        <h1>Seu consumo de água</h1>
+      </div>
+      <button class="icon-btn" id="installBtn" hidden aria-label="Instalar aplicativo">＋</button>
+    </header>
+
+    <main>
+      <section class="view active" id="view-home">
+        <div class="hero-card">
+          <div class="hero-copy">
+            <span class="muted">Hoje, <span id="todayLabel"></span></span>
+            <strong id="consumedToday">0 ml</strong>
+            <span class="muted">de <span id="goalToday">0 ml</span></span>
+          </div>
+          <div class="progress-ring" id="progressRing" aria-label="Progresso da meta">
+            <div><b id="progressPct">0%</b><span>meta</span></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card"><span>Média 7 dias</span><strong id="avg7">0 ml</strong></article>
+          <article class="stat-card"><span>Meta atingida</span><strong id="goalDays">0/7</strong></article>
+          <article class="stat-card"><span>Restante</span><strong id="remaining">0 ml</strong></article>
+        </div>
+
+        <section class="card">
+          <div class="section-head"><div><span class="eyebrow">REGISTRAR</span><h2>Adicionar água</h2></div><button class="text-btn" id="customAddBtn">Outro volume</button></div>
+          <div class="container-grid" id="quickContainers"></div>
+        </section>
+
+        <section class="card">
+          <div class="section-head"><div><span class="eyebrow">EVOLUÇÃO</span><h2>Histórico</h2></div></div>
+          <div class="filter-row" id="chartFilters">
+            <button class="filter active" data-range="day">Dia</button>
+            <button class="filter" data-range="week">Semana</button>
+            <button class="filter" data-range="month">Mês</button>
+            <button class="filter" data-range="year">Ano</button>
+          </div>
+          <div class="chart-wrap"><canvas id="waterChart"></canvas></div>
+          <div class="legend"><span><i class="dot daily"></i> Consumo</span><span><i class="dot avg"></i> Média acumulada</span></div>
+        </section>
+
+        <section class="card">
+          <div class="section-head"><div><span class="eyebrow">ÚLTIMOS REGISTROS</span><h2>Hoje</h2></div></div>
+          <div id="todayLog" class="log-list"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="page-title"><span class="eyebrow">HISTÓRICO</span><h2>Seu progresso</h2><p>Veja como seu consumo evoluiu ao longo do tempo.</p></div>
+        <div class="stats-grid"><article class="stat-card"><span>Média geral</span><strong id="avgAll">0 ml</strong></article><article class="stat-card"><span>Maior dia</span><strong id="maxDay">0 ml</strong></article><article class="stat-card"><span>Dias registrados</span><strong id="daysRecorded">0</strong></article></div>
+        <section class="card"><div class="calendar-row"><label for="historyDate">Consultar dia</label><input id="historyDate" type="date"></div><div id="historyDaySummary"></div></section>
+      </section>
+
+      <section class="view" id="view-containers">
+        <div class="page-title"><span class="eyebrow">RECIPIENTES</span><h2>Seus recipientes</h2><p>Cadastre os copos e garrafas que você usa no dia a dia.</p></div>
+        <section class="card"><div id="containerList" class="settings-list"></div><button class="primary-btn full" id="addContainerBtn">＋ Adicionar recipiente</button></section>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="page-title"><span class="eyebrow">CONFIGURAÇÕES</span><h2>Perfil e meta</h2><p>A meta de 35 ml/kg é apenas uma referência configurável.</p></div>
+        <section class="card form-card">
+          <label>Peso (kg)<input id="weightInput" type="number" min="1" step="0.1" placeholder="Ex.: 65"></label>
+          <label>Meta de hidratação (ml/kg)<input id="mlPerKgInput" type="number" min="1" step="0.5" value="35" placeholder="Ex.: 35"></label>
+          <div class="calculated"><span>Meta diária calculada</span><strong id="calculatedGoal">0 ml/dia</strong></div>
+          <small>A meta diária é calculada automaticamente por peso × ml/kg. Se você alterar o peso, a meta também muda.</small>
+          <button class="primary-btn full" id="saveProfileBtn">Salvar perfil</button>
+        </section>
+        <section class="card form-card">
+          <div class="section-head"><div><span class="eyebrow">DADOS</span><h2>Backup</h2></div></div>
+          <p class="muted">Exporte seus dados para guardar uma cópia ou importar em outro dispositivo.</p>
+          <div class="button-row"><button class="secondary-btn" id="exportBtn">Exportar JSON</button><label class="secondary-btn file-btn">Importar JSON<input id="importInput" type="file" accept="application/json"></label></div>
+          <button class="danger-btn full" id="clearDataBtn">Apagar todos os dados</button>
+        </section>
+        <section class="card notice"><strong>Importante</strong><p>Para pessoas com necessidades específicas, como histórico de cálculo renal, a meta definida pelo profissional de saúde deve prevalecer sobre esta referência.</p></section>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegação principal">
+      <button class="nav-item active" data-view="home"><span>⌂</span><small>Hoje</small></button>
+      <button class="nav-item" data-view="history"><span>◷</span><small>Histórico</small></button>
+      <button class="nav-item" data-view="containers"><span>♢</span><small>Recipientes</small></button>
+      <button class="nav-item" data-view="settings"><span>⚙</span><small>Config.</small></button>
+    </nav>
+  </div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close-modal>×</button>
+      <span class="eyebrow" id="modalEyebrow">RECIPIENTE</span>
+      <h2 id="modalTitle">Adicionar recipiente</h2>
+      <form id="containerForm" class="form-card">
+        <input type="hidden" id="containerId">
+        <label>Nome<input id="containerName" required maxlength="30" placeholder="Ex.: Minha garrafinha"></label>
+        <label>Volume (ml)<input id="containerVolume" required type="number" min="1" step="10" placeholder="500"></label>
+        <label>Ícone<input id="containerIcon" maxlength="4" placeholder="💧"></label>
+        <button class="primary-btn full" type="submit">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
