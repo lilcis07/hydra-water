@@ -9,13 +9,35 @@ const defaultData={profile:{weightKg:'',mlPerKg:35},containers:defaultContainers
 let data=loadData(); let chartRange='day'; let deferredInstall=null; let chartCanvas=document.getElementById('waterChart');
 function loadData(){try{const saved=JSON.parse(localStorage.getItem(KEY)||'{}'); const profile={...defaultData.profile,...(saved.profile||{})}; if(profile.mlPerKg==null) profile.mlPerKg=35; delete profile.goalOverrideMl; return {...defaultData,...saved,profile}}catch{return structuredClone(defaultData)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(data))}
-function today(){return new Date().toISOString().slice(0,10)}
+function today(){
+ const now=new Date();
+ const y=now.getFullYear();
+ const m=String(now.getMonth()+1).padStart(2,'0');
+ const d=String(now.getDate()).padStart(2,'0');
+ return `${y}-${m}-${d}`;
+}
 function fmtMl(v){return `${Math.round(v||0).toLocaleString('pt-BR')} ml`}
 function goalForProfile(p){return Math.round(Number(p?.weightKg||0)*Number(p?.mlPerKg||35))||0}
 function goal(){return goalForProfile(data.profile||{})}
 function dateLabel(d){return new Date(`${d}T12:00:00`).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}).replace('.','')}
 function dayTotal(d){return data.records.filter(r=>r.date===d).reduce((s,r)=>s+r.volumeMl,0)}
-function dateDaysBack(n){const a=[];const d=new Date();for(let i=n-1;i>=0;i--){const x=new Date(d);x.setDate(d.getDate()-i);a.push(x.toISOString().slice(0,10))}return a}
+function localDateKey(date){
+ const y=date.getFullYear();
+ const m=String(date.getMonth()+1).padStart(2,'0');
+ const d=String(date.getDate()).padStart(2,'0');
+ return `${y}-${m}-${d}`;
+}
+function dateDaysBack(n){
+ const a=[];
+ const d=new Date();
+ d.setHours(12,0,0,0);
+ for(let i=n-1;i>=0;i--){
+  const x=new Date(d);
+  x.setDate(d.getDate()-i);
+  a.push(localDateKey(x));
+ }
+ return a;
+}
 function allDaily(){const map={};data.records.forEach(r=>map[r.date]=(map[r.date]||0)+r.volumeMl);return map}
 function average(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0}
 function render(){renderHome();renderContainers();renderSettings();renderHistory();renderChart()}
