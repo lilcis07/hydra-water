@@ -109,7 +109,7 @@
       <form id="containerForm" class="form-card">
         <input type="hidden" id="containerId">
         <label>Nome<input id="containerName" required maxlength="30" placeholder="Ex.: Minha garrafinha"></label>
-        <label>Volume (ml)<input id="containerVolume" required type="number" min="1" step="10" placeholder="500"></label>
+        <label>Volume (ml)<input id="containerVolume" required type="number" min="0.01" step="any" inputmode="decimal" placeholder="500"></label>
         <label>Ícone<input id="containerIcon" maxlength="4" placeholder="💧"></label>
         <button class="primary-btn full" type="submit">Salvar</button>
       </form>
